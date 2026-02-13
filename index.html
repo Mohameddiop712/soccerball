@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TekDieund Ball ⚽</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --neon: #00ff87;
+    --neon-blue: #00d4ff;
+    --neon-glow: rgba(0, 255, 135, 0.4);
+    --deep: #030a12;
+    --card: rgba(8, 20, 40, 0.85);
+    --card-border: rgba(0, 255, 135, 0.08);
+    --glass: rgba(255, 255, 255, 0.03);
+    --text: #f0f4f8;
+    --text-dim: #5a7a9a;
+    --danger: #ff4757;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--deep);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ====== ANIMATED BACKGROUND ====== */
+.bg-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+/* Soccer field lines - subtle */
+.field-lines {
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+}
+
+.field-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    border: 2px solid white;
+    border-radius: 50%;
+}
+
+.field-line-h {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: white;
+}
+
+.field-line-v {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: white;
+}
+
+/* Gradient orbs */
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    animation: orbFloat 20s ease-in-out infinite;
+}
+
+.orb-1 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0, 255, 135, 0.12), transparent 70%);
+    top: -20%;
+    right: -10%;
+    animation-delay: 0s;
+}
+
+.orb-2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(0, 212, 255, 0.08), transparent 70%);
+    bottom: -15%;
+    left: -10%;
+    animation-delay: -7s;
+}
+
+.orb-3 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(0, 255, 135, 0.06), transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: -14s;
+}
+
+@keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(30px, -40px) scale(1.1); }
+    50% { transform: translate(-20px, 20px) scale(0.95); }
+    75% { transform: translate(40px, 30px) scale(1.05); }
+}
+
+/* Noise grain overlay */
+.grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px;
+}
+
+/* Floating soccer balls */
+.floating-balls {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.fball {
+    position: absolute;
+    font-size: 20px;
+    opacity: 0;
+    animation: floatBall linear infinite;
+}
+
+@keyframes floatBall {
+    0% { opacity: 0; transform: translateY(110vh) rotate(0deg) scale(0.5); }
+    5% { opacity: 0.15; }
+    85% { opacity: 0.08; }
+    100% { opacity: 0; transform: translateY(-10vh) rotate(720deg) scale(1.2); }
+}
+
+/* ====== MAIN CONTAINER ====== */
+.container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 480px;
+}
+
+/* ====== HERO BADGE ====== */
+.hero-badge {
+    text-align: center;
+    margin-bottom: 24px;
+    animation: heroIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+@keyframes heroIn {
+    from { opacity: 0; transform: translateY(-30px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.badge-icon {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 16px;
+}
+
+.badge-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: var(--neon);
+    border-right-color: var(--neon-blue);
+    animation: spinRing 4s linear infinite;
+}
+
+.badge-ring-2 {
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    border-bottom-color: var(--neon);
+    border-left-color: var(--neon-blue);
+    animation: spinRing 3s linear infinite reverse;
+}
+
+@keyframes spinRing {
+    to { transform: rotate(360deg); }
+}
+
+.badge-center {
+    position: absolute;
+    inset: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #1a3a2a, #0a1a12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    box-shadow: 
+        0 0 40px rgba(0, 255, 135, 0.15),
+        inset 0 2px 10px rgba(0, 255, 135, 0.1);
+    animation: badgePulse 3s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% { box-shadow: 0 0 40px rgba(0, 255, 135, 0.15), inset 0 2px 10px rgba(0, 255, 135, 0.1); }
+    50% { box-shadow: 0 0 60px rgba(0, 255, 135, 0.25), inset 0 2px 10px rgba(0, 255, 135, 0.2); }
+}
+
+.hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 4px;
+    line-height: 1;
+    background: linear-gradient(135deg, #ffffff 20%, var(--neon) 50%, var(--neon-blue) 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(0, 255, 135, 0.2));
+    margin-bottom: 6px;
+}
+
+.hero-sub {
+    font-size: 12px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 500;
+}
+
+/* ====== CARD ====== */
+.card {
+    background: var(--card);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-radius: 32px;
+    padding: 36px 28px;
+    border: 1px solid var(--card-border);
+    position: relative;
+    overflow: hidden;
+    animation: cardIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+    box-shadow:
+        0 8px 80px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(0, 255, 135, 0.03) inset;
+}
+
+@keyframes cardIn {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Top glow line */
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--neon), var(--neon-blue), transparent);
+    opacity: 0.6;
+}
+
+/* Corner decorations */
+.card::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 60px;
+    height: 60px;
+    border-top: 1px solid rgba(0, 255, 135, 0.15);
+    border-right: 1px solid rgba(0, 255, 135, 0.15);
+    border-radius: 0 16px 0 0;
+    pointer-events: none;
+}
+
+.corner-bl {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    width: 60px;
+    height: 60px;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+    border-left: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 0 0 0 16px;
+    pointer-events: none;
+}
+
+/* ====== LIVE BADGE ====== */
+.live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 255, 135, 0.06);
+    border: 1px solid rgba(0, 255, 135, 0.12);
+    border-radius: 100px;
+    padding: 8px 18px;
+    margin-bottom: 28px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--neon);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    animation: fadeSlide 0.6s 0.6s both;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--neon);
+    border-radius: 50%;
+    position: relative;
+}
+
+.live-dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: var(--neon);
+    opacity: 0.4;
+    animation: livePing 2s ease-out infinite;
+}
+
+@keyframes livePing {
+    0% { transform: scale(1); opacity: 0.4; }
+    100% { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ====== AMOUNT DISPLAY ====== */
+.amount-display {
+    text-align: center;
+    margin-bottom: 32px;
+    animation: fadeSlide 0.6s 0.7s both;
+}
+
+.amount-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.amount-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+}
+
+.amount-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 56px;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+    position: relative;
+}
+
+.amount-value .glow {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--neon), var(--neon-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: glowPulse 3s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 0.5; }
+}
+
+.amount-currency {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 20px;
+    color: var(--text-dim);
+    font-weight: 500;
+    margin-left: 4px;
+}
+
+.amount-target {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-top: 8px;
+}
+
+.amount-target b {
+    color: var(--neon);
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ====== PROGRESS ====== */
+.progress-wrap {
+    margin-bottom: 32px;
+    animation: fadeSlide 0.6s 0.8s both;
+}
+
+.progress-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.progress-stats span {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 500;
+}
+
+.progress-stats .pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--neon);
+}
+
+.progress-track {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 20px;
+    background: linear-gradient(90deg, var(--neon), var(--neon-blue));
+    position: relative;
+    transition: width 2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 20px var(--neon-glow);
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+    border-radius: 20px;
+}
+
+/* Animated shine */
+.progress-fill::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 80%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: progressShine 3s ease-in-out infinite;
+}
+
+@keyframes progressShine {
+    0% { left: -150%; }
+    50% { left: 150%; }
+    100% { left: 150%; }
+}
+
+/* Goal markers */
+.goal-markers {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    position: relative;
+}
+
+.goal-markers::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,0.04) 0px,
+        rgba(255,255,255,0.04) 2px,
+        transparent 2px,
+        transparent 8px
+    );
+}
+
+.marker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    opacity: 0.6;
+    padding-top: 8px;
+}
+
+/* ====== PAYMENT CARD ====== */
+.pay-card {
+    background: linear-gradient(135deg, rgba(0, 255, 135, 0.04), rgba(0, 212, 255, 0.04));
+    border-radius: 24px;
+    padding: 28px 24px;
+    border: 1px solid rgba(0, 255, 135, 0.08);
+    position: relative;
+    overflow: hidden;
+    animation: fadeSlide 0.6s 0.9s both;
+}
+
+.pay-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(0, 255, 135, 0.06), transparent 70%);
+    pointer-events: none;
+}
+
+.pay-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.pay-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--neon), var(--neon-blue));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 4px 15px rgba(0, 255, 135, 0.2);
+}
+
+.pay-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: white;
+}
+
+/* Phone number display */
+.phone-display {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 18px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    margin-bottom: 16px;
+}
+
+.phone-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.phone-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.wave-logo {
+    width: 46px;
+    height: 46px;
+    background: linear-gradient(135deg, #1DC3F7, #00A3E0);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: -0.5px;
+    box-shadow: 0 4px 15px rgba(29, 195, 247, 0.25);
+}
+
+.phone-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.phone-tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    font-weight: 600;
+}
+
+.phone-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 2px;
+}
+
+.copy-btn {
+    background: rgba(0, 255, 135, 0.1);
+    border: 1px solid rgba(0, 255, 135, 0.2);
+    color: var(--neon);
+    padding: 12px 20px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.copy-btn:hover {
+    background: rgba(0, 255, 135, 0.18);
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(0, 255, 135, 0.15);
+}
+
+.copy-btn:active {
+    transform: scale(0.97);
+}
+
+.copy-btn.copied {
+    background: var(--neon);
+    color: #030a12;
+    border-color: var(--neon);
+    box-shadow: 0 0 25px var(--neon-glow);
+}
+
+/* Steps */
+.steps {
+    display: flex;
+    gap: 8px;
+}
+
+.step-pill {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    transition: all 0.3s ease;
+}
+
+.step-pill:hover {
+    border-color: rgba(0, 255, 135, 0.1);
+    background: rgba(0, 255, 135, 0.03);
+}
+
+.step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--neon);
+    margin-bottom: 6px;
+}
+
+.step-text {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+.step-text b {
+    color: var(--text);
+}
+
+/* ====== MOTIVATIONAL SECTION ====== */
+.motive {
+    text-align: center;
+    margin-top: 28px;
+    padding: 20px;
+    background: var(--glass);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    animation: fadeSlide 0.6s 1s both;
+}
+
+.motive-emoji {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.motive-text {
+    font-size: 14px;
+    color: var(--text-dim);
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+.motive-text strong {
+    color: var(--neon);
+}
+
+/* ====== FOOTER ====== */
+.footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 11px;
+    color: var(--text-dim);
+    opacity: 0.5;
+    letter-spacing: 1px;
+    animation: fadeSlide 0.6s 1.1s both;
+}
+
+.footer .heart {
+    color: var(--neon);
+    display: inline-block;
+    animation: heartBeat 2s ease-in-out infinite;
+}
+
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.2); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.15); }
+}
+
+/* ====== TOAST ====== */
+.toast {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: linear-gradient(135deg, var(--neon), var(--neon-blue));
+    color: #030a12;
+    padding: 14px 28px;
+    border-radius: 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    z-index: 999;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 40px rgba(0, 255, 135, 0.3);
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 480px) {
+    .hero-title { font-size: 40px; letter-spacing: 2px; }
+    .card { padding: 28px 20px; border-radius: 26px; }
+    .amount-value { font-size: 44px; }
+    .phone-num { font-size: 18px; letter-spacing: 1px; }
+    .steps { flex-direction: column; gap: 6px; }
+    .step-pill { 
+        display: flex; 
+        align-items: center; 
+        gap: 10px; 
+        text-align: left; 
+        padding: 12px 16px; 
+    }
+    .step-num { margin-bottom: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ====== BACKGROUND ====== -->
+<div class="bg-layer">
+    <div class="field-lines">
+        <div class="field-center"></div>
+        <div class="field-line-h"></div>
+        <div class="field-line-v"></div>
+    </div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+<div class="grain"></div>
+<div class="floating-balls" id="floatingBalls"></div>
+
+<!-- ====== CONTENT ====== -->
+<div class="container">
+
+    <!-- Hero Badge -->
+    <div class="hero-badge">
+        <div class="badge-icon">
+            <div class="badge-ring"></div>
+            <div class="badge-ring-2"></div>
+            <div class="badge-center">⚽</div>
+        </div>
+        <h1 class="hero-title">TEKK DIEUND BALL</h1>
+        <p class="hero-sub">Collecte communautaire</p>
+    </div>
+
+    <!-- Card -->
+    <div class="card">
+        <div class="corner-bl"></div>
+
+        <!-- Live Badge -->
+        <div style="text-align:center;">
+            <div class="live-badge">
+                <div class="live-dot"></div>
+                Collecte en cours
+            </div>
+        </div>
+
+        <!-- Amount Display -->
+        <div class="amount-display">
+            <div class="amount-label">Montant collecté</div>
+            <div class="amount-row">
+                <div class="amount-value" id="total">0</div>
+                <span class="amount-currency">FCFA</span>
+            </div>
+            <p class="amount-target">sur un objectif de <b>10 000 FCFA</b></p>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-wrap">
+            <div class="progress-stats">
+                <span>Progression</span>
+                <span class="pct" id="percent">0%</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="bar"></div>
+            </div>
+            <div class="goal-markers">
+                <span class="marker">0</span>
+                <span class="marker">2.5K</span>
+                <span class="marker">5K</span>
+                <span class="marker">7.5K</span>
+                <span class="marker">10K</span>
+            </div>
+        </div>
+
+        <!-- Payment -->
+        <div class="pay-card">
+            <div class="pay-header">
+                <div class="pay-icon">💸</div>
+                <div class="pay-title">CONTRIBUER VIA WAVE</div>
+            </div>
+
+            <div class="phone-display">
+                <div class="phone-row">
+                    <div class="phone-left">
+                        <div class="wave-logo">W</div>
+                        <div class="phone-details">
+                            <span class="phone-tag">Numéro Wave</span>
+                            <span class="phone-num">76 148 06 37</span>
+                        </div>
+                    </div>
+                    <button class="copy-btn" onclick="copyNumber()">📋 Copier</button>
+                </div>
+            </div>
+
+            <div class="steps">
+                <div class="step-pill">
+                    <div class="step-num">01</div>
+                    <div class="step-text">Ouvrir <b>Wave</b></div>
+                </div>
+                <div class="step-pill">
+                    <div class="step-num">02</div>
+                    <div class="step-text">Envoyer au <b>76 148 06 37</b></div>
+                </div>
+                <div class="step-pill">
+                    <div class="step-num">03</div>
+                    <div class="step-text">Entrer le <b>montant</b></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Motivational -->
+        <div class="motive">
+            <div class="motive-emoji">🏆</div>
+            <p class="motive-text">Chaque franc nous rapproche du coup d'envoi !<br><strong>Ensemble, on est plus forts.</strong></p>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <p class="footer">Fait avec <span class="heart">♥</span> — TekDieund Ball 2025</p>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ Numéro copié !</div>
+
+<script>
+// ===== CONFIG =====
+const objectif = 10000;
+const collecte = 0; // 🔴 MODIFIE ICI quand tu reçois de l'argent
+
+// ===== ANIMATED COUNTER =====
+function animateCounter(element, target, duration = 2000) {
+    const start = performance.now();
+    
+    function tick(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        // Elastic ease out
+        const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+        const current = Math.floor(target * eased);
+        
+        if (element.id === 'total') {
+            element.textContent = current.toLocaleString('fr-FR');
+        } else {
+            element.textContent = current + '%';
+        }
+        
+        if (progress < 1) requestAnimationFrame(tick);
+    }
+    
+    requestAnimationFrame(tick);
+}
+
+// ===== INIT =====
+const percent = Math.floor((collecte / objectif) * 100);
+
+setTimeout(() => {
+    animateCounter(document.getElementById('total'), collecte, 2000);
+    animateCounter(document.getElementById('percent'), percent, 2000);
+    
+    setTimeout(() => {
+        document.getElementById('bar').style.width = percent + '%';
+    }, 200);
+}, 800);
+
+// ===== COPY NUMBER =====
+function copyNumber() {
+    navigator.clipboard.writeText('761480637').then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = '✅ Copié !';
+        btn.classList.add('copied');
+        
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            btn.innerHTML = '📋 Copier';
+            btn.classList.remove('copied');
+            toast.classList.remove('show');
+        }, 2500);
+    });
+}
+
+// ===== FLOATING SOCCER BALLS =====
+const container = document.getElementById('floatingBalls');
+const balls = ['⚽'];
+for (let i = 0; i < 12; i++) {
+    const el = document.createElement('div');
+    el.className = 'fball';
+    el.textContent = balls[0];
+    el.style.left = Math.random() * 100 + '%';
+    el.style.fontSize = (14 + Math.random() * 16) + 'px';
+    el.style.animationDuration = (10 + Math.random() * 15) + 's';
+    el.style.animationDelay = (Math.random() * 15) + 's';
+    container.appendChild(el);
+}
+</script>
+
+</body>
+</html>
